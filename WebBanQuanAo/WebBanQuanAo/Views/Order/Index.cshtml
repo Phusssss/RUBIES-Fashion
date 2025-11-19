@@ -1,0 +1,111 @@
+﻿@model X.PagedList.IPagedList<WebBanQuanAo.Models.Order>
+@using X.PagedList.Mvc.Core
+<link rel="stylesheet" href="~/css/custom-orders.css" asp-append-version="true" />
+
+<div class="container">
+    <h2 class="text-center my-4" style="color: var(--secondary-color); font-weight: 600;">Danh Sách Đơn Hàng</h2>
+
+    <!-- Form tìm kiếm và lọc -->
+    <form method="get" asp-action="Index" class="mb-4">
+        <div class="row g-3">
+            <!-- Tìm kiếm theo mã đơn hàng -->
+            <div class="col-md-3">
+                <input type="text" name="searchOrderId" class="form-control" placeholder="Nhập mã đơn hàng" value="@ViewData["SearchOrderId"]" />
+            </div>
+
+            <!-- Lọc theo trạng thái -->
+            <div class="col-md-3">
+                <select name="statusFilter" class="form-control">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Pending" selected="@(ViewData["StatusFilter"] as string == "Pending")">Chờ xác nhận</option>
+                    <option value="Confirmed" selected="@(ViewData["StatusFilter"] as string == "Confirmed")">Đã xác nhận</option>
+                    <option value="Shipped" selected="@(ViewData["StatusFilter"] as string == "Shipped")">Đã giao</option>
+                    <option value="Cancelled" selected="@(ViewData["StatusFilter"] as string == "Cancelled")">Đã hủy</option>
+                </select>
+            </div>
+
+            <!-- Lọc theo thời gian -->
+            <div class="col-md-3">
+                <input type="date" name="startDate" class="form-control" value="@ViewData["StartDate"]" />
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="endDate" class="form-control" value="@ViewData["EndDate"]" />
+            </div>
+
+            <div class="col-md-6 mt-2">
+                <button type="submit" class="btn btn-custom">Lọc</button>
+                <a asp-action="Index" class="btn btn-outline-custom">Reset</a>
+            </div>
+            <div class="col-md-6 mt-2 text-end">
+                <a asp-action="ExportToExcel" class="btn btn-custom">Xuất Excel</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <!-- Added table-responsive for horizontal scrolling on mobile -->
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead style="background-color: var(--light-bg);">
+                        <tr>
+                            <th class="py-3">ID</th>
+                            <th class="py-3">Người đặt</th>
+                            <th class="py-3">Ngày đặt</th>
+                            <th class="py-3">Tổng tiền</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="py-3 text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">@order.OrderId</td>
+                                <td class="align-middle">@order.User?.FullName</td>
+                                <td class="align-middle">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td class="align-middle">@order.TotalAmount.ToString("C")</td>
+                                <td class="align-middle">@order.Status</td>
+                                <td class="align-middle text-center">
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <form asp-action="UpdateStatus" method="post" style="display:inline;">
+                                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                                            <input type="hidden" name="newStatus" value="Confirmed" />
+                                            <button type="submit" class="btn btn-custom btn-sm">Đã xác nhận</button>
+                                        </form>
+
+                                        <form asp-action="UpdateStatus" method="post" style="display:inline;">
+                                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                                            <input type="hidden" name="newStatus" value="Cancelled" />
+                                            <button type="submit" class="btn btn-outline-custom btn-sm">Hủy</button>
+                                        </form>
+                                    }
+                                    else if (order.Status == "Confirmed")
+                                    {
+                                        <form asp-action="UpdateStatus" method="post" style="display:inline;">
+                                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                                            <input type="hidden" name="newStatus" value="Shipped" />
+                                            <button type="submit" class="btn btn-custom btn-sm">Đã giao</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-container mt-4 d-flex justify-content-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new
+            {
+                page,
+                searchOrderId = ViewData["SearchOrderId"],
+                statusFilter = ViewData["StatusFilter"],
+                startDate = ViewData["StartDate"],
+                endDate = ViewData["EndDate"]
+            }))
+    </div>
+</div>

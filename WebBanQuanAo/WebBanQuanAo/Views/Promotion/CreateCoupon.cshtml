@@ -1,0 +1,58 @@
+@model WebBanQuanAo.Models.Coupon
+
+<div class="container">
+    <h2>Tạo mã giảm giá mới</h2>
+    
+    <form asp-action="CreateCoupon" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Mã giảm giá</label>
+                    <input asp-for="Code" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Giảm giá (số tiền)</label>
+                    <input asp-for="DiscountAmount" type="number" class="form-control" min="0" />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Giảm giá (%)</label>
+                    <input asp-for="DiscountPercentage" type="number" class="form-control" min="0" max="100" />
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Đơn hàng tối thiểu</label>
+                    <input asp-for="MinOrderAmount" type="number" class="form-control" min="0" />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Giới hạn sử dụng</label>
+                    <input asp-for="UsageLimit" type="number" class="form-control" min="1" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Ngày bắt đầu</label>
+                    <input asp-for="StartDate" type="datetime-local" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Ngày kết thúc</label>
+                    <input asp-for="EndDate" type="datetime-local" class="form-control" required />
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Tạo mã giảm giá</button>
+            <a asp-action="Coupons" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,12 @@
+﻿@model WebBanQuanAo.Models.Category
+
+<h2>Xóa thể loại</h2>
+
+<p>Bạn có chắc chắn muốn xóa thể loại "<strong>@Model.Name</strong>"?</p>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+</form>

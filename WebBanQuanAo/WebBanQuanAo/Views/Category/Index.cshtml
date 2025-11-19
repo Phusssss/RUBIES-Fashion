@@ -1,0 +1,44 @@
+﻿@model IEnumerable<WebBanQuanAo.Models.Category>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center my-4" style="color: var(--secondary-color); font-weight: 600;">Danh Mục Sản Phẩm</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <div class="fw-bold">Danh sách danh mục</div>
+                        <a href="@Url.Action("Create")" class="btn btn-custom btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i> Thêm mới
+                        </a>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        @foreach (var category in Model)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@category.Name</span>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Edit", new { id = category.CategoryId })" class="btn btn-outline-custom btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = category.CategoryId })" class="btn btn-outline-custom btn-sm ms-2" style="color: var(--primary-color);">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bootstrap Icons if not already included in your layout -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">

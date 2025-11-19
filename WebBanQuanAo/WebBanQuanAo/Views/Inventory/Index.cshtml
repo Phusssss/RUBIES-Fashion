@@ -1,0 +1,52 @@
+@model List<WebBanQuanAo.Models.Product>
+@{
+    ViewData["Title"] = "Quản lý kho hàng";
+}
+
+<div class="container mt-4">
+    <h2>Cảnh báo hết hàng</h2>
+    
+    @if (Model.Any())
+    {
+        <div class="alert alert-warning">
+            <strong>Có @Model.Count sản phẩm sắp hết hàng!</strong>
+        </div>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Tồn kho</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr class="@(product.Stock == 0 ? "table-danger" : "table-warning")">
+                        <td>@product.Name</td>
+                        <td>@product.Category?.Name</td>
+                        <td>
+                            <span class="badge @(product.Stock == 0 ? "bg-danger" : "bg-warning")">
+                                @product.Stock
+                            </span>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("UpdateStock", new { productId = product.ProductId })" 
+                               class="btn btn-primary btn-sm">Nhập hàng</a>
+                            <a href="@Url.Action("History", new { productId = product.ProductId })" 
+                               class="btn btn-info btn-sm">Lịch sử</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-success">
+            <strong>Tất cả sản phẩm đều có đủ hàng trong kho!</strong>
+        </div>
+    }
+</div>

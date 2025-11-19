@@ -1,0 +1,48 @@
+@model List<WebBanQuanAo.Models.CategoryPromotion>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Khuyến mãi theo danh mục</h2>
+        <a asp-action="CreateCategoryPromotion" class="btn btn-primary">Tạo khuyến mãi</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên khuyến mãi</th>
+                    <th>Danh mục</th>
+                    <th>Giảm giá</th>
+                    <th>Giảm tối đa</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var promotion in Model)
+                {
+                    <tr>
+                        <td>@promotion.Name</td>
+                        <td>@promotion.Category.Name</td>
+                        <td>@promotion.DiscountPercentage%</td>
+                        <td>@promotion.MaxDiscountAmount.ToString("N0")₫</td>
+                        <td>
+                            @promotion.StartDate.ToString("dd/MM/yyyy") - 
+                            @promotion.EndDate.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @if (promotion.IsActive && promotion.EndDate >= DateTime.Now)
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Hết hạn</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

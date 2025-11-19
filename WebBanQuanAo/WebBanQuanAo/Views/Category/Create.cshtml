@@ -1,0 +1,34 @@
+﻿<!-- Add Category Form -->
+@model WebBanQuanAo.Models.Category
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center my-4" style="color: var(--secondary-color); font-weight: 600;">Thêm Danh Mục</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label for="Name" class="form-label" style="font-weight: 500;">Tên danh mục</label>
+                            <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ImgUrl" class="form-label" style="font-weight: 500;">Link hình ảnh </label>
+                            <input type="text" class="form-control" id="ImgUrl" name="ImgUrl" value="@Model.ImgUrl" required />
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("Index")" class="btn btn-outline-custom">Hủy</a>
+                            <button type="submit" class="btn btn-custom">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

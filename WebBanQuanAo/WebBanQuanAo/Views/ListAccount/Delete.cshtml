@@ -1,0 +1,13 @@
+﻿@model WebBanQuanAo.Models.User
+
+<h2>Xóa tài khoản</h2>
+
+<div class="alert alert-warning">
+    <strong>Cảnh báo!</strong> Bạn đang muốn xóa tài khoản của <strong>@Model.FullName</strong>.
+</div>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+</form>

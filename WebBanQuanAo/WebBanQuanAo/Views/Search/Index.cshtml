@@ -1,0 +1,128 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Tìm kiếm sản phẩm";
+}
+
+<div class="container my-4">
+    <!-- Form tìm kiếm nâng cao -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-search"></i> Tìm kiếm nâng cao</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Từ khóa</label>
+                        <input type="text" name="searchTerm" class="form-control" value="@ViewBag.SearchTerm" 
+                               placeholder="Tên sản phẩm, mô tả..." id="searchInput">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Danh mục</label>
+                        <select name="categoryId" class="form-select">
+                            <option value="">Tất cả danh mục</option>
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.CategoryId" selected="@(ViewBag.CategoryId == category.CategoryId)">
+                                    @category.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Sắp xếp</label>
+                        <select name="sortBy" class="form-select">
+                            <option value="name" selected="@(ViewBag.SortBy == "name")">Tên A-Z</option>
+                            <option value="price_asc" selected="@(ViewBag.SortBy == "price_asc")">Giá thấp đến cao</option>
+                            <option value="price_desc" selected="@(ViewBag.SortBy == "price_desc")">Giá cao đến thấp</option>
+                            <option value="newest" selected="@(ViewBag.SortBy == "newest")">Mới nhất</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Giá từ</label>
+                        <input type="number" name="minPrice" class="form-control" value="@ViewBag.MinPrice" placeholder="0">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Giá đến</label>
+                        <input type="number" name="maxPrice" class="form-control" value="@ViewBag.MaxPrice" placeholder="1000000">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Size</label>
+                        <select name="size" class="form-select">
+                            <option value="">Tất cả size</option>
+                            <option value="S" selected="@(ViewBag.Size == "S")">S</option>
+                            <option value="M" selected="@(ViewBag.Size == "M")">M</option>
+                            <option value="L" selected="@(ViewBag.Size == "L")">L</option>
+                            <option value="XL" selected="@(ViewBag.Size == "XL")">XL</option>
+                            <option value="XXL" selected="@(ViewBag.Size == "XXL")">XXL</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Màu sắc</label>
+                        <select name="color" class="form-select">
+                            <option value="">Tất cả màu</option>
+                            <option value="Đỏ" selected="@(ViewBag.Color == "Đỏ")">Đỏ</option>
+                            <option value="Xanh" selected="@(ViewBag.Color == "Xanh")">Xanh</option>
+                            <option value="Vàng" selected="@(ViewBag.Color == "Vàng")">Vàng</option>
+                            <option value="Đen" selected="@(ViewBag.Color == "Đen")">Đen</option>
+                            <option value="Trắng" selected="@(ViewBag.Color == "Trắng")">Trắng</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kết quả tìm kiếm -->
+    <div class="row">
+        <div class="col-12">
+            <h4>Kết quả tìm kiếm (@Model.Count sản phẩm)</h4>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <img src="@product.imgurl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-muted small">@product.Category?.Name</p>
+                            <p class="card-text flex-grow-1">@product.Description</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 text-primary mb-0">@product.Price.ToString("C")</span>
+                                    <a href="@Url.Action("Details", "Product", new { id = product.ProductId })" 
+                                       class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                                </div>
+                                @if (product.AvailableSizes.Any())
+                                {
+                                    <small class="text-muted">Size: @string.Join(", ", product.AvailableSizes)</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h4 class="mt-3">Không tìm thấy sản phẩm nào</h4>
+            <p class="text-muted">Thử thay đổi từ khóa hoặc bộ lọc tìm kiếm</p>
+        </div>
+    }
+</div>

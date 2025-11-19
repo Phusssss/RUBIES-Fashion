@@ -1,0 +1,59 @@
+@model List<WebBanQuanAo.Models.Coupon>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý mã giảm giá</h2>
+        <a asp-action="CreateCoupon" class="btn btn-primary">Tạo mã mới</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Mô tả</th>
+                    <th>Giảm giá</th>
+                    <th>Đơn tối thiểu</th>
+                    <th>Sử dụng</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var coupon in Model)
+                {
+                    <tr>
+                        <td><strong>@coupon.Code</strong></td>
+                        <td>@coupon.Description</td>
+                        <td>
+                            @if (coupon.DiscountAmount > 0)
+                            {
+                                <span>@coupon.DiscountAmount.ToString("N0")₫</span>
+                            }
+                            else
+                            {
+                                <span>@coupon.DiscountPercentage%</span>
+                            }
+                        </td>
+                        <td>@coupon.MinOrderAmount.ToString("N0")₫</td>
+                        <td>@coupon.UsedCount/@coupon.UsageLimit</td>
+                        <td>
+                            @coupon.StartDate.ToString("dd/MM/yyyy") - 
+                            @coupon.EndDate.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @if (coupon.IsActive && coupon.EndDate >= DateTime.Now)
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Hết hạn</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+@model WebBanQuanAo.Models.FlashSale
+
+<div class="container">
+    <h2>Tạo Flash Sale mới</h2>
+    
+    <form asp-action="CreateFlashSale" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Sản phẩm</label>
+                    <select asp-for="ProductId" class="form-select" required>
+                        <option value="">Chọn sản phẩm</option>
+                        @foreach (var product in ViewBag.Products as List<WebBanQuanAo.Models.Product>)
+                        {
+                            <option value="@product.ProductId">@product.Name - @product.Price.ToString("N0")₫</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Giá gốc</label>
+                    <input asp-for="OriginalPrice" type="number" class="form-control" min="0" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Giá sale</label>
+                    <input asp-for="SalePrice" type="number" class="form-control" min="0" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Số lượng</label>
+                    <input asp-for="Quantity" type="number" class="form-control" min="1" required />
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Thời gian bắt đầu</label>
+                    <input asp-for="StartTime" type="datetime-local" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Thời gian kết thúc</label>
+                    <input asp-for="EndTime" type="datetime-local" class="form-control" required />
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Tạo Flash Sale</button>
+            <a asp-action="FlashSales" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>

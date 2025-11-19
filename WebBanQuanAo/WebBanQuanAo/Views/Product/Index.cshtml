@@ -1,0 +1,82 @@
+﻿@model IEnumerable<WebBanQuanAo.Models.Product>
+
+<div class="product-admin-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: var(--secondary-color); font-weight: 600; font-size: 28px;">Quản lý sản phẩm</h1>
+        <a asp-action="Create" class="btn btn-custom">
+            <i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm mới
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead style="background-color: var(--light-bg);">
+                        <tr>
+                            <th scope="col" class="fw-600">Tên sản phẩm</th>
+                            <th scope="col" class="fw-600">Giá</th>
+                            <th scope="col" class="fw-600">Loại sản phẩm</th>
+                            <th scope="col" class="fw-600" style="width: 200px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">@product.Name</td>
+                                <td class="align-middle">@product.Price.ToString("N0")₫</td>
+                                <td class="align-middle">@product.Category?.Name</td>
+                                <td class="align-middle">
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-outline-custom btn-sm">Chi tiết</a>
+                                        <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-outline-custom btn-sm">Sửa</a>
+
+                                        <!-- Delete Button -->
+                                        <form method="post" action="@Url.Action("DeleteConfirmed", "Product", new { id = product.ProductId })" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Xóa</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .table th {
+        border-top: none;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    /* Hover effect for table rows */
+    .table tbody tr:hover {
+        background-color: var(--light-bg);
+    }
+
+    /* Responsive adjustments */
+
+</style>

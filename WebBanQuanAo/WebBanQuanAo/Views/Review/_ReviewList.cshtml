@@ -1,0 +1,33 @@
+@model List<WebBanQuanAo.Models.Review>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var review in Model)
+    {
+        <div class="review-item border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="d-flex align-items-center mb-2">
+                        <strong class="me-3">@review.User.FullName</strong>
+                        <div class="rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= review.Rating ? "text-warning" : "text-muted")"></i>
+                            }
+                        </div>
+                    </div>
+                    <p class="mb-0">@review.Comment</p>
+                </div>
+                <small class="text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center py-4">
+        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+        <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+        <p class="text-muted">Hãy là người đầu tiên đánh giá!</p>
+    </div>
+}

@@ -1,0 +1,56 @@
+@model List<WebBanQuanAo.Models.InventoryHistory>
+@{
+    ViewData["Title"] = "Lịch sử kho";
+    var product = ViewBag.Product as WebBanQuanAo.Models.Product;
+}
+
+<div class="container mt-4">
+    <h2>Lịch sử kho - @product.Name</h2>
+    
+    <div class="mb-3">
+        <a href="@Url.Action("Index")" class="btn btn-secondary">← Quay lại</a>
+        <a href="@Url.Action("UpdateStock", new { productId = product.ProductId })" 
+           class="btn btn-primary">Cập nhật kho</a>
+    </div>
+    
+    @if (Model.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Thời gian</th>
+                    <th>Loại</th>
+                    <th>Số lượng</th>
+                    <th>Trước</th>
+                    <th>Sau</th>
+                    <th>Lý do</th>
+                    <th>Người thực hiện</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var history in Model)
+                {
+                    <tr>
+                        <td>@history.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <span class="badge @(history.Type == "IN" ? "bg-success" : "bg-danger")">
+                                @(history.Type == "IN" ? "Nhập" : "Xuất")
+                            </span>
+                        </td>
+                        <td>@history.Quantity</td>
+                        <td>@history.StockBefore</td>
+                        <td>@history.StockAfter</td>
+                        <td>@history.Reason</td>
+                        <td>@(history.User?.Username ?? "System")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Chưa có lịch sử giao dịch nào cho sản phẩm này.
+        </div>
+    }
+</div>

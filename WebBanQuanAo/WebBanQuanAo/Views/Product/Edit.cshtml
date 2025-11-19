@@ -1,0 +1,92 @@
+﻿@model WebBanQuanAo.Models.Product
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center my-4" style="color: var(--secondary-color); font-weight: 600;">Sửa Sản Phẩm</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="ProductId" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label" style="font-weight: 500;">Tên sản phẩm</label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label" style="font-weight: 500;">Giá</label>
+                                    <input asp-for="Price" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CategoryId" class="form-label" style="font-weight: 500;">Danh mục</label>
+                                    <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))" class="form-control"></select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Stock" class="form-label" style="font-weight: 500;">Số lượng tồn kho</label>
+                                    <input asp-for="Stock" class="form-control" />
+                                    <span asp-validation-for="Stock" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label" style="font-weight: 500;">Mô tả sản phẩm</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="imgurl" class="form-label" style="font-weight: 500;">URL hình ảnh chính</label>
+                            <input asp-for="imgurl" class="form-control" />
+                            <span asp-validation-for="imgurl" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ListImg" class="form-label" style="font-weight: 500;">Danh sách hình ảnh bổ sung (URL)</label>
+                            <input type="text" id="ListImg" name="ListImg" class="form-control" placeholder="Nhập URL các hình ảnh cách nhau bằng dấu phẩy" />
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" asp-for="IsNew" class="form-check-input" id="isNew" />
+                                    <label asp-for="IsNew" class="form-check-label" for="isNew" style="font-weight: 500;">Sản phẩm mới</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" asp-for="IsTrend" class="form-check-input" id="isTrend" />
+                                    <label asp-for="IsTrend" class="form-check-label" for="isTrend" style="font-weight: 500;">Sản phẩm xu hướng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-custom">Quay lại</a>
+                            <button type="submit" class="btn btn-custom">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

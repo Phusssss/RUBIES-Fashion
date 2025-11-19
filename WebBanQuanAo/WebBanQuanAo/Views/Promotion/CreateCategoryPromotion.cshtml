@@ -1,0 +1,54 @@
+@model WebBanQuanAo.Models.CategoryPromotion
+
+<div class="container">
+    <h2>Tạo khuyến mãi danh mục</h2>
+    
+    <form asp-action="CreateCategoryPromotion" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Tên khuyến mãi</label>
+                    <input asp-for="Name" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select asp-for="CategoryId" class="form-select" required>
+                        <option value="">Chọn danh mục</option>
+                        @foreach (var category in ViewBag.Categories as List<WebBanQuanAo.Models.Category>)
+                        {
+                            <option value="@category.CategoryId">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Phần trăm giảm giá</label>
+                    <input asp-for="DiscountPercentage" type="number" class="form-control" min="1" max="100" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Số tiền giảm tối đa</label>
+                    <input asp-for="MaxDiscountAmount" type="number" class="form-control" min="0" />
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Ngày bắt đầu</label>
+                    <input asp-for="StartDate" type="datetime-local" class="form-control" required />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Ngày kết thúc</label>
+                    <input asp-for="EndDate" type="datetime-local" class="form-control" required />
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Tạo khuyến mãi</button>
+            <a asp-action="CategoryPromotions" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>

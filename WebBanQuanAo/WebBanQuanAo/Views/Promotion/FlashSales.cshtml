@@ -1,0 +1,52 @@
+@model List<WebBanQuanAo.Models.FlashSale>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý Flash Sale</h2>
+        <a asp-action="CreateFlashSale" class="btn btn-primary">Tạo Flash Sale</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá gốc</th>
+                    <th>Giá sale</th>
+                    <th>Giảm</th>
+                    <th>Số lượng</th>
+                    <th>Đã bán</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sale in Model)
+                {
+                    <tr>
+                        <td>@sale.Product.Name</td>
+                        <td>@sale.OriginalPrice.ToString("N0")₫</td>
+                        <td>@sale.SalePrice.ToString("N0")₫</td>
+                        <td>@sale.DiscountPercentage%</td>
+                        <td>@sale.Quantity</td>
+                        <td>@sale.SoldQuantity</td>
+                        <td>
+                            @sale.StartTime.ToString("dd/MM HH:mm") - 
+                            @sale.EndTime.ToString("dd/MM HH:mm")
+                        </td>
+                        <td>
+                            @if (sale.IsActive && sale.EndTime >= DateTime.Now && sale.SoldQuantity < sale.Quantity)
+                            {
+                                <span class="badge bg-success">Đang diễn ra</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Kết thúc</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

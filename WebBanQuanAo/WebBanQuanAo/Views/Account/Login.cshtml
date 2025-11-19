@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+
+<style>
+    .auth-container {
+        padding: 40px 0;
+        min-height: calc(100vh - 400px);
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+    }
+
+    .auth-header {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 25px 20px;
+    }
+
+        .auth-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+    .auth-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--secondary-color);
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border: 2px solid #eee;
+        border-radius: 5px;
+        padding: 12px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 77, 109, 0.1);
+        }
+
+    .btn-auth {
+        background: var(--primary-color);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        border: none;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+        .btn-auth:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+        .auth-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .auth-footer a:hover {
+                text-decoration: underline;
+            }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<!-- Trang Đăng Nhập -->
+<div class="container auth-container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h3 class="text-center">Đăng Nhập</h3>
+                </div>
+                <div class="auth-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Success"]</div>
+                    }
+                    @if (ViewData.ModelState.Values.SelectMany(v => v.Errors).Any())
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p class="mb-0">@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
+                    <form method="post" asp-action="Login">
+                        <div class="form-group">
+                            <label class="form-label" for="username">Tên đăng nhập</label>
+                            <input type="text" name="username" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Mật khẩu</label>
+                            <input type="password" name="password" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-auth">Đăng Nhập</button>
+                    </form>
+                    
+                    <div class="text-center my-3">
+                        <span class="text-muted">hoặc</span>
+                    </div>
+                    
+                    <a href="@Url.Action("GoogleLogin", "Account")" class="btn btn-danger w-100">
+                        <i class="fab fa-google me-2"></i>Đăng nhập bằng Google
+                    </a>
+                    
+                    <div class="auth-footer">
+                        Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

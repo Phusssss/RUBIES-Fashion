@@ -1,0 +1,143 @@
+﻿@model List<WebBanQuanAo.Models.CartItem>
+
+<div class="cart-container">
+    <h1 class="mb-4" style="color: var(--secondary-color); font-weight: 600; font-size: 28px;">Giỏ hàng của bạn</h1>
+
+    @if (Model.Any())
+    {
+        decimal total = 0;
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="background-color: var(--light-bg);">
+                            <tr>
+                                <th scope="col" class="fw-600">Sản phẩm</th>
+                                <th scope="col" class="fw-600">Size/Màu</th>
+                                <th scope="col" class="fw-600">Số lượng</th>
+                                <th scope="col" class="fw-600">Giá</th>
+                                <th scope="col" class="fw-600">Tổng cộng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                decimal itemTotal = item.Product.Price * item.Quantity;
+                                total += itemTotal;
+                                <tr>
+                                    <td class="align-middle">@item.Product.Name</td>
+                                    <td class="align-middle">
+                                        @if (!string.IsNullOrEmpty(item.SelectedSize) || !string.IsNullOrEmpty(item.SelectedColor))
+                                        {
+                                            <div>
+                                                @if (!string.IsNullOrEmpty(item.SelectedSize))
+                                                {
+                                                    <span class="badge bg-secondary me-1">@item.SelectedSize</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(item.SelectedColor))
+                                                {
+                                                    <span class="badge bg-info">@item.SelectedColor</span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="align-middle">@item.Quantity</td>
+                                    <td class="align-middle">@item.Product.Price.ToString("N0")₫</td>
+                                    <td class="align-middle" style="color: var(--primary-color); font-weight: 600;">
+                                        @itemTotal.ToString("N0")₫
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="4" class="text-end fw-600">Tổng thanh toán:</td>
+                                <td class="fw-600" style="color: var(--primary-color); font-size: 18px;">
+                                    @total.ToString("N0")₫
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-4" style="color: var(--secondary-color); font-weight: 600; font-size: 20px;">
+                    Thông tin người nhận
+                </h3>
+
+                <form asp-action="PlaceOrder" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="FullName" class="form-label fw-500">Họ và tên</label>
+                                <input type="text" class="form-control" id="FullName" name="fullName" required
+                                       style="padding: 12px; border-radius: 5px;" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="Phone" class="form-label fw-500">Số điện thoại</label>
+                                <input type="text" class="form-control" id="Phone" name="phone" required
+                                       style="padding: 12px; border-radius: 5px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-group">
+                            <label for="Address" class="form-label fw-500">Địa chỉ</label>
+                            <input type="text" class="form-control" id="Address" name="address" required
+                                   style="padding: 12px; border-radius: 5px;" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom">
+                        Đặt hàng
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-3" style="color: var(--accent-color); font-size: 20px;">
+                Giỏ hàng của bạn đang trống!
+            </div>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-custom">
+                Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+    .cart-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .fw-500 {
+        font-weight: 500;
+    }
+
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 77, 109, 0.25);
+    }
+
+    .table th {
+        border-top: none;
+    }
+</style>
