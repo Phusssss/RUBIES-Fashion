@@ -1,4 +1,4 @@
-﻿@model WebBanQuanAo.Models.Product
+@model WebBanQuanAo.Models.Product
 
 <div class="product-details-container">
     <div class="card shadow-sm">
@@ -12,9 +12,14 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    @if (!string.IsNullOrEmpty(Model.imgurl))
+                    @if (Model.Images.Any())
                     {
-                        <img src="@Model.imgurl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                        var mainImage = Model.Images.FirstOrDefault(i => i.IsMain) ?? Model.Images.FirstOrDefault();
+                        <img src="@mainImage.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <img src="/images/no-image.jpg" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
                     }
                 </div>
 
@@ -63,39 +68,44 @@
 
                         <!-- Rating trung bình -->
                         <!-- Size và Màu sắc -->
-                        @if (Model.AvailableSizes.Any() || Model.AvailableColors.Any())
+                        @if (Model.Sizes.Any() || Model.Colors.Any())
                         {
                             <form id="addToCartForm">
                                 <input type="hidden" name="productId" value="@Model.ProductId" />
                                 
-                                @if (Model.AvailableSizes.Any())
+                                @if (Model.Sizes.Any())
                                 {
                                     <div class="info-group mb-3">
                                         <label class="info-label">Chọn Size</label>
                                         <div class="size-options">
-                                            @foreach (var size in Model.AvailableSizes)
+                                            @foreach (var size in Model.Sizes)
                                             {
-                                                <input type="radio" name="selectedSize" value="@size" id="size_@size" required />
-                                                <label for="size_@size" class="size-label">@size</label>
+                                                <input type="radio" name="selectedSize" value="@size.SizeName" id="size_@size.SizeName" required />
+                                                <label for="size_@size.SizeName" class="size-label">@size.SizeName</label>
                                             }
                                         </div>
                                     </div>
                                 }
                                 
-                                @if (Model.AvailableColors.Any())
+                                @if (Model.Colors.Any())
                                 {
                                     <div class="info-group mb-3">
                                         <label class="info-label">Chọn Màu</label>
                                         <div class="color-options">
-                                            @foreach (var color in Model.AvailableColors)
+                                            @foreach (var color in Model.Colors)
                                             {
-                                                <input type="radio" name="selectedColor" value="@color" id="color_@color" required />
-                                                <label for="color_@color" class="color-label">@color</label>
+                                                <input type="radio" name="selectedColor" value="@color.ColorName" id="color_@color.ColorName" required />
+                                                <label for="color_@color.ColorName" class="color-label" style="background-color: @color.ColorCode;">@color.ColorName</label>
                                             }
                                         </div>
                                     </div>
                                 }
-                                
+                            
+                            <div class="info-group mb-3">
+                                <label class="info-label">Số lượng</label>
+                                <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" class="form-control" style="width: 100px;" />
+                            </div>
+                            
                                 <div class="info-group mb-3">
                                     <label class="info-label">Số lượng</label>
                                     <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" class="form-control" style="width: 100px;" />
@@ -108,7 +118,7 @@
                         }
                         else
                         {
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <form asp-controller="Home" asp-action="AddToCart" method="post">
                                 <input type="hidden" name="productId" value="@Model.ProductId" />
                                 <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" class="form-control mb-3" style="width: 100px;" />
                                 <button type="submit" class="btn btn-custom btn-lg">
@@ -374,14 +384,20 @@
         const selectedSize = formData.get('selectedSize');
         const selectedColor = formData.get('selectedColor');
         
-        if (@Model.AvailableSizes.Any().ToString().ToLower() && !selectedSize) {
+        if (!selectedSize) {
             alert('Vui lòng chọn size!');
             return;
         }
         
-        if (@Model.AvailableColors.Any().ToString().ToLower() && !selectedColor) {
+        if (!selectedColor) {
             alert('Vui lòng chọn màu!');
             return;
+        }
+        
+        // Log dữ liệu gửi đi
+        console.log('Form data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ' + value);
         }
         
         // Gửi request thêm vào giỏ hàng
@@ -389,16 +405,37 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Thêm vào giỏ hàng thành công!');
-            } else {
-                alert('Có lỗi xảy ra: ' + data.message);
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.text(); // Đọc response như text trước
+        })
+        .then(text => {
+            console.log('Raw response:', text);
+            
+            try {
+                const data = JSON.parse(text);
+                console.log('Parsed data:', data);
+                
+                if (data.success) {
+                    alert('Thêm vào giỏ hàng thành công!');
+                } else {
+                    alert('Có lỗi xảy ra: ' + data.message);
+                }
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                console.error('Response text:', text);
+                alert('Lỗi phân tích phản hồi từ server. Kiểm tra console để xem chi tiết.');
             }
         })
         .catch(error => {
-            alert('Có lỗi xảy ra!');
+            console.error('Fetch error:', error);
+            alert('Có lỗi xảy ra: ' + error.message);
         });
     }
 </script>

@@ -12,9 +12,24 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    @if (!string.IsNullOrEmpty(Model.imgurl))
+                    @if (Model.Images.Any())
                     {
-                        <img src="@Model.imgurl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                        var mainImage = Model.Images.FirstOrDefault(i => i.IsMain) ?? Model.Images.FirstOrDefault();
+                        <img src="@mainImage.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                        
+                        @if (Model.Images.Count() > 1)
+                        {
+                            <div class="image-gallery mt-2">
+                                @foreach (var image in Model.Images.OrderBy(i => i.DisplayOrder))
+                                {
+                                    <img src="@image.ImageUrl" alt="@Model.Name" class="gallery-thumb" onclick="changeMainImage('@image.ImageUrl')" />
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <img src="/images/no-image.jpg" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
                     }
                 </div>
 
@@ -62,34 +77,34 @@
                         }
 
                         <!-- Size và Màu sắc -->
-                        @if (Model.AvailableSizes.Any() || Model.AvailableColors.Any())
+                        @if (Model.Sizes.Any() || Model.Colors.Any())
                         {
                             <form id="addToCartForm">
                                 <input type="hidden" name="productId" value="@Model.ProductId" />
                                 
-                                @if (Model.AvailableSizes.Any())
+                                @if (Model.Sizes.Any())
                                 {
                                     <div class="info-group mb-3">
                                         <label class="info-label">Chọn Size</label>
                                         <div class="size-options">
-                                            @foreach (var size in Model.AvailableSizes)
+                                            @foreach (var size in Model.Sizes)
                                             {
-                                                <input type="radio" name="selectedSize" value="@size" id="size_@size" required />
-                                                <label for="size_@size" class="size-label">@size</label>
+                                                <input type="radio" name="selectedSize" value="@size.SizeName" id="size_@size.SizeName" required />
+                                                <label for="size_@size.SizeName" class="size-label">@size.SizeName</label>
                                             }
                                         </div>
                                     </div>
                                 }
                                 
-                                @if (Model.AvailableColors.Any())
+                                @if (Model.Colors.Any())
                                 {
                                     <div class="info-group mb-3">
                                         <label class="info-label">Chọn Màu</label>
                                         <div class="color-options">
-                                            @foreach (var color in Model.AvailableColors)
+                                            @foreach (var color in Model.Colors)
                                             {
-                                                <input type="radio" name="selectedColor" value="@color" id="color_@color" required />
-                                                <label for="color_@color" class="color-label">@color</label>
+                                                <input type="radio" name="selectedColor" value="@color.ColorName" id="color_@color.ColorName" required />
+                                                <label for="color_@color.ColorName" class="color-label" style="background-color: @color.ColorCode;">@color.ColorName</label>
                                             }
                                         </div>
                                     </div>
@@ -314,7 +329,36 @@
     .review-item {
         padding: 15px 0;
     }
+    
+    .image-gallery {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .gallery-thumb {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s;
+    }
+    
+    .gallery-thumb:hover {
+        border-color: var(--primary-color);
+    }
 </style>
+
+<script>
+    function changeMainImage(imageUrl) {
+        const mainImg = document.querySelector('.img-fluid.rounded.mb-3');
+        if (mainImg) {
+            mainImg.src = imageUrl;
+        }
+    }
+</script>
 
 <script>
     // JavaScript cho th\u00eam v\u00e0o gi\u1ecf h\u00e0ng
@@ -326,12 +370,12 @@
         const selectedSize = formData.get('selectedSize');
         const selectedColor = formData.get('selectedColor');
         
-        if (@Model.AvailableSizes.Any().ToString().ToLower() && !selectedSize) {
+        if (@Model.Sizes.Any().ToString().ToLower() && !selectedSize) {
             alert('Vui l\u00f2ng ch\u1ecdn size!');
             return;
         }
         
-        if (@Model.AvailableColors.Any().ToString().ToLower() && !selectedColor) {
+        if (@Model.Colors.Any().ToString().ToLower() && !selectedColor) {
             alert('Vui l\u00f2ng ch\u1ecdn m\u00e0u!');
             return;
         }

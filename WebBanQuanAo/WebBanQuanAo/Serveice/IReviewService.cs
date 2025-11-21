@@ -2,12 +2,17 @@ using WebBanQuanAo.Models;
 
 namespace WebBanQuanAo.Serveice
 {
+    public class ReviewData
+    {
+        public List<Review> Reviews { get; set; } = new();
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
+        public bool HasUserReviewed { get; set; }
+    }
+
     public interface IReviewService
     {
         Task<bool> AddReview(int productId, int userId, int rating, string comment);
-        Task<List<Review>> GetProductReviews(int productId);
-        Task<double> GetAverageRating(int productId);
-        Task<bool> HasUserReviewed(int productId, int userId);
-        Task<int> GetReviewCount(int productId);
+        Task<ReviewData> GetProductReviewData(int productId, int? userId = null);
     }
 }

@@ -95,7 +95,7 @@
             {
                 <div class="col-md-4 col-sm-6 mb-4">
                     <div class="card h-100">
-                        <img src="@product.imgurl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                        <img src="@(product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg")" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text text-muted small">@product.Category?.Name</p>
@@ -106,9 +106,9 @@
                                     <a href="@Url.Action("Details", "Product", new { id = product.ProductId })" 
                                        class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
                                 </div>
-                                @if (product.AvailableSizes.Any())
+                                @if (product.Sizes.Any())
                                 {
-                                    <small class="text-muted">Size: @string.Join(", ", product.AvailableSizes)</small>
+                                    <small class="text-muted">Size: @string.Join(", ", product.Sizes.Select(s => s.SizeName))</small>
                                 }
                             </div>
                         </div>

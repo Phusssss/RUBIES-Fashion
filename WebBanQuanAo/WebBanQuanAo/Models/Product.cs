@@ -25,16 +25,12 @@ namespace WebBanQuanAo.Models
         [Range(0, int.MaxValue, ErrorMessage = "Số lượng không được âm")]
         public int Stock { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập URL hình ảnh")]
         public bool IsNew { get; set; }
         public bool IsTrend { get; set; }
-        public string imgurl { get; set; }
-
-        // Thêm thuộc tính ListImg
-        public List<string> ListImg { get; set; }  // Đây là danh sách URL các hình ảnh
         
-        // Thêm Size và Color
-        public List<string> AvailableSizes { get; set; } = new List<string>(); // S, M, L, XL, XXL
-        public List<string> AvailableColors { get; set; } = new List<string>(); // Đỏ, Xanh, Vàng, etc
+        // Navigation properties
+        public ICollection<ColorProduct> Colors { get; set; } = new List<ColorProduct>();
+        public ICollection<SizeProduct> Sizes { get; set; } = new List<SizeProduct>();
+        public ICollection<ImageProduct> Images { get; set; } = new List<ImageProduct>();
     }
 }

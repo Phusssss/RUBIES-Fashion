@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanQuanAo.Models;
 
@@ -11,9 +12,11 @@ using WebBanQuanAo.Models;
 namespace WebBanQuanAo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251121073248_FixSizeColorData")]
+    partial class FixSizeColorData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,34 +85,6 @@ namespace WebBanQuanAo.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("CategoryPromotions");
-                });
-
-            modelBuilder.Entity("WebBanQuanAo.Models.ColorProduct", b =>
-                {
-                    b.Property<int>("ColorProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColorProductId"));
-
-                    b.Property<string>("ColorCode")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
-                    b.Property<string>("ColorName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ColorProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ColorProducts");
                 });
 
             modelBuilder.Entity("WebBanQuanAo.Models.Coupon", b =>
@@ -205,34 +180,6 @@ namespace WebBanQuanAo.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("FlashSales");
-                });
-
-            modelBuilder.Entity("WebBanQuanAo.Models.ImageProduct", b =>
-                {
-                    b.Property<int>("ImageProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageProductId"));
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ImageProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ImageProducts");
                 });
 
             modelBuilder.Entity("WebBanQuanAo.Models.InventoryHistory", b =>
@@ -356,6 +303,14 @@ namespace WebBanQuanAo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
+                    b.Property<string>("AvailableColors")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvailableSizes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -369,6 +324,10 @@ namespace WebBanQuanAo.Migrations
                     b.Property<bool>("IsTrend")
                         .HasColumnType("bit");
 
+                    b.PrimitiveCollection<string>("ListImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -378,6 +337,10 @@ namespace WebBanQuanAo.Migrations
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
+
+                    b.Property<string>("imgurl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProductId");
 
@@ -418,32 +381,6 @@ namespace WebBanQuanAo.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("WebBanQuanAo.Models.SizeProduct", b =>
-                {
-                    b.Property<int>("SizeProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeProductId"));
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SizeName")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.HasKey("SizeProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("SizeProducts");
                 });
 
             modelBuilder.Entity("WebBanQuanAo.Models.User", b =>
@@ -495,32 +432,10 @@ namespace WebBanQuanAo.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("WebBanQuanAo.Models.ColorProduct", b =>
-                {
-                    b.HasOne("WebBanQuanAo.Models.Product", "Product")
-                        .WithMany("Colors")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("WebBanQuanAo.Models.FlashSale", b =>
                 {
                     b.HasOne("WebBanQuanAo.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebBanQuanAo.Models.ImageProduct", b =>
-                {
-                    b.HasOne("WebBanQuanAo.Models.Product", "Product")
-                        .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -605,17 +520,6 @@ namespace WebBanQuanAo.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebBanQuanAo.Models.SizeProduct", b =>
-                {
-                    b.HasOne("WebBanQuanAo.Models.Product", "Product")
-                        .WithMany("Sizes")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("WebBanQuanAo.Models.Category", b =>
                 {
                     b.Navigation("Products");
@@ -624,15 +528,6 @@ namespace WebBanQuanAo.Migrations
             modelBuilder.Entity("WebBanQuanAo.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("WebBanQuanAo.Models.Product", b =>
-                {
-                    b.Navigation("Colors");
-
-                    b.Navigation("Images");
-
-                    b.Navigation("Sizes");
                 });
 #pragma warning restore 612, 618
         }

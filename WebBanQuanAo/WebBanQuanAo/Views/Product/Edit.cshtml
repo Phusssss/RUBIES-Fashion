@@ -55,14 +55,35 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="imgurl" class="form-label" style="font-weight: 500;">URL hình ảnh chính</label>
-                            <input asp-for="imgurl" class="form-control" />
-                            <span asp-validation-for="imgurl" class="text-danger"></span>
+                            <label for="imageUrls" class="form-label" style="font-weight: 500;">URL hình ảnh</label>
+                            <input name="imageUrls" class="form-control" value="@string.Join(",", Model.Images.Select(i => i.ImageUrl))" placeholder="Nhập URL các hình ảnh cách nhau bằng dấu phẩy" />
                         </div>
 
-                        <div class="mb-3">
-                            <label for="ListImg" class="form-label" style="font-weight: 500;">Danh sách hình ảnh bổ sung (URL)</label>
-                            <input type="text" id="ListImg" name="ListImg" class="form-control" placeholder="Nhập URL các hình ảnh cách nhau bằng dấu phẩy" />
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" style="font-weight: 500;">Size có sẵn</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var size in new[] { "S", "M", "L", "XL", "XXL" })
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" name="sizes" value="@size" class="form-check-input" id="size@size" @(Model.Sizes.Any(s => s.SizeName == size) ? "checked" : "")>
+                                            <label class="form-check-label" for="size@size">@size</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" style="font-weight: 500;">Màu sắc có sẵn</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var color in new[] { "Đỏ", "Xanh", "Vàng", "Đen", "Trắng" })
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" name="colors" value="@color" class="form-check-input" id="color@color" @(Model.Colors.Any(c => c.ColorName == color) ? "checked" : "")>
+                                            <label class="form-check-label" for="color@color">@color</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row mb-4">

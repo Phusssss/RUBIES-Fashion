@@ -22,10 +22,18 @@
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                decimal itemTotal = item.Product.Price * item.Quantity;
+                                decimal itemTotal = item.Price * item.Quantity;
                                 total += itemTotal;
                                 <tr>
-                                    <td class="align-middle">@item.Product.Name</td>
+                                    <td class="align-middle">
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" />
+                                            }
+                                            <span>@item.ProductName</span>
+                                        </div>
+                                    </td>
                                     <td class="align-middle">
                                         @if (!string.IsNullOrEmpty(item.SelectedSize) || !string.IsNullOrEmpty(item.SelectedColor))
                                         {
@@ -46,7 +54,7 @@
                                         }
                                     </td>
                                     <td class="align-middle">@item.Quantity</td>
-                                    <td class="align-middle">@item.Product.Price.ToString("N0")₫</td>
+                                    <td class="align-middle">@item.Price.ToString("N0")₫</td>
                                     <td class="align-middle" style="color: var(--primary-color); font-weight: 600;">
                                         @itemTotal.ToString("N0")₫
                                     </td>

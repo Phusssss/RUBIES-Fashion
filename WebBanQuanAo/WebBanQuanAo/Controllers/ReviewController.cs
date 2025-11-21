@@ -34,8 +34,8 @@ namespace WebBanQuanAo.Controllers
 
         public async Task<IActionResult> GetReviews(int productId)
         {
-            var reviews = await _reviewService.GetProductReviews(productId);
-            return PartialView("_ReviewList", reviews);
+            var reviewData = await _reviewService.GetProductReviewData(productId);
+            return PartialView("_ReviewList", reviewData.Reviews);
         }
     }
 }

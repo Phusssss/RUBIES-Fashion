@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Dữ Liệu Sản Phẩm</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Reset Dữ Liệu Sản Phẩm</h1>
+    
+    <button class="btn" onclick="clearData()">1. Xóa Toàn Bộ Dữ Liệu</button>
+    <button class="btn" onclick="createData()">2. Tạo Dữ Liệu Mẫu</button>
+    <button class="btn" onclick="resetAll()">3. Reset Toàn Bộ (Xóa + Tạo Mới)</button>
+    <button class="btn" onclick="checkData()" style="background: #28a745;">4. Kiểm Tra Dữ Liệu</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function showResult(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.innerHTML = `<div class="result ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+
+        async function clearData() {
+            try {
+                const response = await fetch('/DataSeed/ClearAllProducts', { method: 'POST' });
+                if (response.ok) {
+                    showResult('✓ Đã xóa toàn bộ dữ liệu sản phẩm thành công!');
+                } else {
+                    showResult('✗ Lỗi khi xóa dữ liệu', false);
+                }
+            } catch (error) {
+                showResult('✗ Lỗi: ' + error.message, false);
+            }
+        }
+
+        async function createData() {
+            try {
+                const response = await fetch('/DataSeed/CreateSampleData', { method: 'POST' });
+                if (response.ok) {
+                    showResult('✓ Đã tạo dữ liệu mẫu thành công!');
+                } else {
+                    showResult('✗ Lỗi khi tạo dữ liệu mẫu', false);
+                }
+            } catch (error) {
+                showResult('✗ Lỗi: ' + error.message, false);
+            }
+        }
+
+        async function resetAll() {
+            showResult('Đang xử lý...');
+            try {
+                // Xóa dữ liệu cũ
+                const clearResponse = await fetch('/DataSeed/ClearAllProducts', { method: 'POST' });
+                if (!clearResponse.ok) {
+                    showResult('✗ Lỗi khi xóa dữ liệu cũ', false);
+                    return;
+                }
+
+                // Tạo dữ liệu mới
+                const createResponse = await fetch('/DataSeed/CreateSampleData', { method: 'POST' });
+                if (createResponse.ok) {
+                    const result = await createResponse.json();
+                    showResult('✓ ' + result.message);
+                } else {
+                    showResult('✗ Lỗi khi tạo dữ liệu mới', false);
+                }
+            } catch (error) {
+                showResult('✗ Lỗi: ' + error.message, false);
+            }
+        }
+
+        async function checkData() {
+            try {
+                const response = await fetch('/DataSeed/CheckData');
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`📊 Dữ liệu hiện tại: ${data.products} sản phẩm, ${data.colors} màu, ${data.sizes} size, ${data.images} hình ảnh, ${data.categories} danh mục`);
+                } else {
+                    showResult('✗ Lỗi khi kiểm tra dữ liệu', false);
+                }
+            } catch (error) {
+                showResult('✗ Lỗi: ' + error.message, false);
+            }
+        }
+    </script>
+</body>
+</html>

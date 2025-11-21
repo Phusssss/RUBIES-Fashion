@@ -67,18 +67,20 @@
                                 <td class="align-middle">@order.TotalAmount.ToString("C")</td>
                                 <td class="align-middle">@order.Status</td>
                                 <td class="align-middle text-center">
+                                    <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-info btn-sm me-1">Chi tiết</a>
+                                    
                                     @if (order.Status == "Pending")
                                     {
                                         <form asp-action="UpdateStatus" method="post" style="display:inline;">
                                             <input type="hidden" name="orderId" value="@order.OrderId" />
                                             <input type="hidden" name="newStatus" value="Confirmed" />
-                                            <button type="submit" class="btn btn-custom btn-sm">Đã xác nhận</button>
+                                            <button type="submit" class="btn btn-custom btn-sm">Xác nhận</button>
                                         </form>
 
                                         <form asp-action="UpdateStatus" method="post" style="display:inline;">
                                             <input type="hidden" name="orderId" value="@order.OrderId" />
                                             <input type="hidden" name="newStatus" value="Cancelled" />
-                                            <button type="submit" class="btn btn-outline-custom btn-sm">Hủy</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Hủy</button>
                                         </form>
                                     }
                                     else if (order.Status == "Confirmed")
@@ -86,7 +88,7 @@
                                         <form asp-action="UpdateStatus" method="post" style="display:inline;">
                                             <input type="hidden" name="orderId" value="@order.OrderId" />
                                             <input type="hidden" name="newStatus" value="Shipped" />
-                                            <button type="submit" class="btn btn-custom btn-sm">Đã giao</button>
+                                            <button type="submit" class="btn btn-success btn-sm">Đã giao</button>
                                         </form>
                                     }
                                 </td>

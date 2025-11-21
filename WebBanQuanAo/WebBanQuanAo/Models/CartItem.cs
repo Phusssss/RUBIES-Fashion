@@ -1,13 +1,20 @@
-﻿namespace WebBanQuanAo.Models
+﻿using Newtonsoft.Json;
+
+namespace WebBanQuanAo.Models
 {
     public class CartItem
     {
-        public Product Product { get; set; } = null!; // Sản phẩm
-        public int Quantity { get; set; } // Số lượng
-        public string? SelectedSize { get; set; } // Size được chọn
-        public string? SelectedColor { get; set; } // Màu được chọn
+        public int ProductId { get; set; }
+        public string ProductName { get; set; } = null!;
+        public decimal Price { get; set; }
+        public string? ImageUrl { get; set; }
+        public int Quantity { get; set; }
+        public string? SelectedSize { get; set; }
+        public string? SelectedColor { get; set; }
         
-        // Key để phân biệt các item có cùng sản phẩm nhưng khác size/màu
-        public string CartKey => $"{Product.ProductId}_{SelectedSize}_{SelectedColor}";
+        [JsonIgnore]
+        public Product? Product { get; set; }
+        
+        public string CartKey => $"{ProductId}_{SelectedSize}_{SelectedColor}";
     }
 }

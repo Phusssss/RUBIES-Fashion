@@ -34,34 +34,21 @@ namespace WebBanQuanAo.Serveice
             return true;
         }
 
-        public async Task<List<Review>> GetProductReviews(int productId)
+        public async Task<ReviewData> GetProductReviewData(int productId, int? userId = null)
         {
-            return await _context.Reviews
+            var reviews = await _context.Reviews
                 .Where(r => r.ProductId == productId)
                 .Include(r => r.User)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
-        }
 
-        public async Task<double> GetAverageRating(int productId)
-        {
-            var reviews = await _context.Reviews
-                .Where(r => r.ProductId == productId)
-                .ToListAsync();
-
-            return reviews.Any() ? reviews.Average(r => r.Rating) : 0;
-        }
-
-        public async Task<bool> HasUserReviewed(int productId, int userId)
-        {
-            return await _context.Reviews
-                .AnyAsync(r => r.ProductId == productId && r.UserId == userId);
-        }
-
-        public async Task<int> GetReviewCount(int productId)
-        {
-            return await _context.Reviews
-                .CountAsync(r => r.ProductId == productId);
+            return new ReviewData
+            {
+                Reviews = reviews,
+                AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0,
+                ReviewCount = reviews.Count,
+                HasUserReviewed = userId.HasValue && reviews.Any(r => r.UserId == userId.Value)
+            };
         }
     }
 }

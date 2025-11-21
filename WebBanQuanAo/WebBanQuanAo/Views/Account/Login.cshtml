@@ -1,165 +1,131 @@
-﻿@{
+@{
     ViewData["Title"] = "Đăng Nhập";
 }
 
-<style>
-    .auth-container {
-        padding: 40px 0;
-        min-height: calc(100vh - 400px);
-    }
-
-    .auth-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        border: none;
-        overflow: hidden;
-    }
-
-    .auth-header {
-        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 25px 20px;
-    }
-
-        .auth-header h3 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 24px;
-        }
-
-    .auth-body {
-        padding: 30px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        font-weight: 500;
-        color: var(--secondary-color);
-        margin-bottom: 8px;
-    }
-
-    .form-control {
-        border: 2px solid #eee;
-        border-radius: 5px;
-        padding: 12px 15px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(255, 77, 109, 0.1);
-        }
-
-    .btn-auth {
-        background: var(--primary-color);
-        color: white;
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        border: none;
-        width: 100%;
-        margin-top: 10px;
-    }
-
-        .btn-auth:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-    .auth-footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-    }
-
-        .auth-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-            .auth-footer a:hover {
-                text-decoration: underline;
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#ff4d6d',
+                    secondary: '#c9184a',
+                }
             }
-
-    .text-danger {
-        color: #dc3545;
-        font-size: 13px;
-        margin-top: 5px;
+        }
     }
+</script>
 
-    .alert {
-        border: none;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-</style>
-
-<!-- Trang Đăng Nhập -->
-<div class="container auth-container">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <h3 class="text-center">Đăng Nhập</h3>
+<div class="min-h-screen w-full bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-400 flex overflow-hidden">
+    <!-- Background with actual image -->
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+    </div>
+    
+    <!-- Left Content - Hidden on mobile -->
+    <div class="hidden lg:flex lg:flex-1 items-center justify-start pl-32 relative z-10">
+        <div class="text-white space-y-8">
+            <h1 class="text-5xl font-light tracking-wide">clubhouse</h1>
+            <h2 class="text-4xl font-light">Shop</h2>
+            <div class="space-y-4 mt-16">
+                <h3 class="text-sm font-bold uppercase tracking-wider">New Arrivals</h3>
+                <div class="space-y-3">
+                    <div class="text-sm font-medium opacity-50 hover:opacity-100 cursor-pointer transition-opacity">Women's</div>
+                    <div class="text-sm font-medium opacity-50 hover:opacity-100 cursor-pointer transition-opacity">Men's</div>
+                    <div class="text-sm font-medium opacity-50 hover:opacity-100 cursor-pointer transition-opacity">Kids</div>
+                    <div class="text-sm font-medium opacity-50 hover:opacity-100 cursor-pointer transition-opacity">Winters</div>
                 </div>
-                <div class="auth-body">
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success">@TempData["Success"]</div>
-                    }
-                    @if (ViewData.ModelState.Values.SelectMany(v => v.Errors).Any())
-                    {
-                        <div class="alert alert-danger">
-                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                            {
-                                <p class="mb-0">@error.ErrorMessage</p>
-                            }
-                        </div>
-                    }
-                    <form method="post" asp-action="Login">
-                        <div class="form-group">
-                            <label class="form-label" for="username">Tên đăng nhập</label>
-                            <input type="text" name="username" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="password">Mật khẩu</label>
-                            <input type="password" name="password" class="form-control" required />
-                        </div>
-                        <button type="submit" class="btn btn-auth">Đăng Nhập</button>
-                    </form>
-                    
-                    <div class="text-center my-3">
-                        <span class="text-muted">hoặc</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Panel - Full width on mobile -->
+    <div class="w-full lg:w-96 bg-black bg-opacity-25 backdrop-blur-md relative z-20 flex flex-col">
+        <!-- Close Button -->
+        <div class="absolute right-6 top-6 w-12 h-12 flex items-center justify-center cursor-pointer text-white text-xl hover:bg-white hover:bg-opacity-10 rounded-full transition-all">
+            <i class="fas fa-times"></i>
+        </div>
+        
+        <!-- Login Form Container -->
+        <div class="flex-1 flex items-center justify-center px-6 py-8">
+            <div class="w-full max-w-sm">
+                <h1 class="text-white text-xl lg:text-2xl font-bold uppercase text-center mb-8 leading-tight">
+                    existing member<br>Welcome Back!
+                </h1>
+                
+                @if (TempData["Success"] != null)
+                {
+                    <div class="bg-green-500 bg-opacity-20 border border-green-500 border-opacity-30 rounded-lg p-3 mb-6 text-white text-sm">
+                        <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+                    </div>
+                }
+                @if (ViewData.ModelState.Values.SelectMany(v => v.Errors).Any())
+                {
+                    <div class="bg-red-500 bg-opacity-20 border border-red-500 border-opacity-30 rounded-lg p-3 mb-6 text-white text-sm">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+                
+                <form method="post" asp-action="Login" class="space-y-8">
+                    <!-- Email Input -->
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-0 top-3 w-6 h-6 text-white"></i>
+                        <input type="text" 
+                               name="username" 
+                               class="w-full bg-transparent border-none border-b border-dashed border-white pb-3 pl-8 text-white text-sm placeholder-white placeholder-opacity-60 focus:outline-none focus:border-solid" 
+                               placeholder="Jamesthomas@mail.com" 
+                               required />
                     </div>
                     
-                    <a href="@Url.Action("GoogleLogin", "Account")" class="btn btn-danger w-100">
-                        <i class="fab fa-google me-2"></i>Đăng nhập bằng Google
+                    <!-- Password Input -->
+                    <div class="relative opacity-60 focus-within:opacity-100 transition-opacity">
+                        <i class="fas fa-lock absolute left-0 top-3 w-6 h-6 text-white"></i>
+                        <input type="password" 
+                               name="password" 
+                               class="w-full bg-transparent border-none border-b border-dashed border-white pb-3 pl-8 text-white text-sm placeholder-white placeholder-opacity-60 focus:outline-none focus:border-solid" 
+                               placeholder="Enter Password" 
+                               required />
+                    </div>
+                    
+                    <!-- Continue Button -->
+                    <button type="submit" 
+                            class="w-full h-12 bg-white rounded-3xl font-bold text-base text-gray-800 flex items-center justify-center gap-3 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl shadow-lg">
+                        Continue
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+                
+                <!-- Divider -->
+                <div class="relative text-center my-8">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-white border-opacity-20"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <span class="bg-black bg-opacity-25 px-4 text-white text-sm font-medium">OR</span>
+                    </div>
+                </div>
+                
+                <!-- Social Login -->
+                <div class="flex justify-center gap-4 mb-8">
+                    <a href="@Url.Action("GoogleLogin", "Account")" 
+                       class="w-12 h-12 border border-white rounded-full bg-transparent flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white hover:bg-opacity-20 hover:-translate-y-1 text-white">
+                        <i class="fab fa-google"></i>
                     </a>
-                    
-                    <div class="auth-footer">
-                        Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a>
-                    </div>
+                    <button class="w-12 h-12 border border-white rounded-full bg-transparent flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white hover:bg-opacity-20 hover:-translate-y-1 text-white">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <button class="w-12 h-12 border border-white rounded-full bg-transparent flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white hover:bg-opacity-20 hover:-translate-y-1 text-white">
+                        <i class="fab fa-apple"></i>
+                    </button>
+                </div>
+                
+                <!-- Register Link -->
+                <div class="text-center text-white text-sm">
+                    Don't have account? <a asp-action="Register" class="underline hover:no-underline font-medium">Register Now</a>
                 </div>
             </div>
         </div>

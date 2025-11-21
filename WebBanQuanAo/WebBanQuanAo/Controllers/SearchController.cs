@@ -16,7 +16,12 @@ namespace WebBanQuanAo.Controllers
         public async Task<IActionResult> Index(string searchTerm, int? categoryId, decimal? minPrice, decimal? maxPrice, 
             string size, string color, string sortBy = "name")
         {
-            var query = _context.Products.Include(p => p.Category).AsQueryable();
+            var query = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Include(p => p.Images)
+                .AsQueryable();
 
             // Tìm kiếm full-text
             if (!string.IsNullOrEmpty(searchTerm))
@@ -45,13 +50,13 @@ namespace WebBanQuanAo.Controllers
             // Lọc theo size
             if (!string.IsNullOrEmpty(size))
             {
-                query = query.Where(p => p.AvailableSizes.Contains(size));
+                query = query.Where(p => p.Sizes.Any(s => s.SizeName == size));
             }
 
             // Lọc theo màu
             if (!string.IsNullOrEmpty(color))
             {
-                query = query.Where(p => p.AvailableColors.Contains(color));
+                query = query.Where(p => p.Colors.Any(c => c.ColorName == color));
             }
 
             // Sắp xếp

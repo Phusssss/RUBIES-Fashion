@@ -1,4 +1,4 @@
-﻿@{
+@{
     var products = Model as List<Product>;  // Explicitly cast the model to a strongly typed collection
     var categories = Model as List<Category>;  // Explicitly cast the model to a strongly typed collection
 
@@ -324,7 +324,7 @@
                         }
 
                             <a href="@Url.Action("Details", "Home", new { id = product.ProductId })">
-                                <img src="@product.imgurl" class="product-image" alt="@product.Name">
+                                <img src="@(product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg")" class="product-image" alt="@product.Name">
                             </a>
                             <div class="product-overlay">
                                 <div class="product-actions">
@@ -382,7 +382,7 @@
                         <div class="product-image-wrapper">
                             <div class="product-badge badge-sale">Hot Trend</div>
                             <a href="@Url.Action("Details", "Home", new { id = product.ProductId })">
-                                <img src="@product.imgurl" class="product-image" alt="@product.Name">
+                                <img src="@(product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg")" class="product-image" alt="@product.Name">
                             </a>
                             <div class="product-overlay">
                                 <div class="product-actions">
@@ -440,7 +440,7 @@
                         <div class="product-image-wrapper">
                             <div class="product-badge badge-new">Mới</div>
                             <a href="@Url.Action("Details", "Home", new { id = product.ProductId })">
-                                <img src="@product.imgurl" class="product-image" alt="@product.Name">
+                                <img src="@(product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg")" class="product-image" alt="@product.Name">
                             </a>
                             <div class="product-overlay">
                                 <div class="product-actions">

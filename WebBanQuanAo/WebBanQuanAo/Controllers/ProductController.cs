@@ -32,7 +32,12 @@ namespace WebBanQuanAo.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Include(p => p.Images)
+                .ToListAsync();
             return View(products);
         }
 
@@ -43,25 +48,26 @@ namespace WebBanQuanAo.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null) return NotFound();
 
-            // Lấy đánh giá và rating trung bình
-            var reviews = await _reviewService.GetProductReviews(id.Value);
-            var averageRating = await _reviewService.GetAverageRating(id.Value);
-            var reviewCount = await _reviewService.GetReviewCount(id.Value);
-            
+            // Lấy tất cả dữ liệu review trong một lần gọi
             var userId = HttpContext.Session.GetInt32("UserId");
-            var hasReviewed = userId.HasValue ? await _reviewService.HasUserReviewed(id.Value, userId.Value) : false;
+            var reviewData = await _reviewService.GetProductReviewData(id.Value, userId);
 
-            ViewBag.Reviews = reviews;
-            ViewBag.AverageRating = averageRating;
-            ViewBag.ReviewCount = reviewCount;
-            ViewBag.HasReviewed = hasReviewed;
+            ViewBag.Reviews = reviewData.Reviews;
+            ViewBag.AverageRating = reviewData.AverageRating;
+            ViewBag.ReviewCount = reviewData.ReviewCount;
+            ViewBag.HasReviewed = reviewData.HasUserReviewed;
 
             return View(product);
         }
+
+
         // Hiển thị form thêm sản phẩm
         public IActionResult Create()
         {
@@ -87,7 +93,7 @@ namespace WebBanQuanAo.Controllers
         // Xử lý thêm sản phẩm
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, string ListImg, List<string> AvailableSizes, List<string> AvailableColors)
+        public async Task<IActionResult> Create(Product product, string imageUrls, List<string> sizes, List<string> colors)
         {
             if (!IsAdmin())
             {
@@ -95,7 +101,6 @@ namespace WebBanQuanAo.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Kiểm tra nếu CategoryId không hợp lệ
             if (product.CategoryId == 0)
             {
                 ModelState.AddModelError("CategoryId", "Vui lòng chọn một danh mục.");
@@ -103,28 +108,53 @@ namespace WebBanQuanAo.Controllers
 
             if (!ModelState.IsValid)
             {
-                // Đảm bảo rằng Categories được load lại khi form không hợp lệ
                 ViewBag.Categories = _context.Categories.ToList();
                 return View(product);
             }
 
-            // Chuyển đổi ListImg thành một danh sách các URL
-            if (!string.IsNullOrEmpty(ListImg))
-            {
-                product.ListImg = ListImg.Split(',').Select(img => img.Trim()).ToList();
-            }
-            else
-            {
-                product.ListImg = new List<string>();  // Nếu không có hình ảnh phụ, gán danh sách trống
-            }
-            
-            // Gán Size và Color
-            product.AvailableSizes = AvailableSizes ?? new List<string>();
-            product.AvailableColors = AvailableColors ?? new List<string>();
-
             try
             {
                 _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                // Thêm hình ảnh
+                if (!string.IsNullOrEmpty(imageUrls))
+                {
+                    var urls = imageUrls.Split(',').Select(url => url.Trim()).Where(url => !string.IsNullOrEmpty(url));
+                    var images = urls.Select((url, index) => new ImageProduct
+                    {
+                        ProductId = product.ProductId,
+                        ImageUrl = url,
+                        IsMain = index == 0,
+                        DisplayOrder = index + 1
+                    }).ToList();
+                    _context.ImageProducts.AddRange(images);
+                }
+
+                // Thêm sizes
+                if (sizes != null && sizes.Any())
+                {
+                    var sizeProducts = sizes.Select(size => new SizeProduct
+                    {
+                        ProductId = product.ProductId,
+                        SizeName = size,
+                        Stock = product.Stock / sizes.Count
+                    }).ToList();
+                    _context.SizeProducts.AddRange(sizeProducts);
+                }
+
+                // Thêm colors
+                if (colors != null && colors.Any())
+                {
+                    var colorProducts = colors.Select(color => new ColorProduct
+                    {
+                        ProductId = product.ProductId,
+                        ColorName = color,
+                        ColorCode = GetColorCode(color)
+                    }).ToList();
+                    _context.ColorProducts.AddRange(colorProducts);
+                }
+
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Thêm sản phẩm thành công!";
                 return RedirectToAction(nameof(Index));
@@ -135,6 +165,20 @@ namespace WebBanQuanAo.Controllers
                 ViewBag.Categories = _context.Categories.ToList();
                 return View(product);
             }
+        }
+
+        private string GetColorCode(string colorName)
+        {
+            return colorName.ToLower() switch
+            {
+                "đen" or "black" => "#000000",
+                "trắng" or "white" => "#FFFFFF",
+                "xanh" or "blue" => "#0066CC",
+                "đỏ" or "red" => "#FF0000",
+                "vàng" or "yellow" => "#FFFF00",
+                "xanh lá" or "green" => "#00FF00",
+                _ => "#808080"
+            };
         }
 
 
@@ -152,19 +196,21 @@ namespace WebBanQuanAo.Controllers
 
             if (id == null) return NotFound();
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null) return NotFound();
 
-            // Make sure to load categories for the dropdown
             ViewBag.Categories = await _context.Categories.ToListAsync();
-
             return View(product);
         }
 
         // Xử lý sửa sản phẩm
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product)
+        public async Task<IActionResult> Edit(int id, Product product, string imageUrls, List<string> sizes, List<string> colors)
         {
             if (!IsAdmin())
             {
@@ -174,20 +220,57 @@ namespace WebBanQuanAo.Controllers
 
             if (id != product.ProductId) return NotFound();
 
-            // Xử lý ListImg (tách các URL từ chuỗi nhập vào và lưu vào List<string>)
-            if (!string.IsNullOrEmpty(Request.Form["ListImg"]))
-            {
-                product.ListImg = Request.Form["ListImg"].ToString()
-                    .Split(',')
-                    .Select(url => url.Trim())
-                    .ToList();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(product);
+
+                    // Xóa dữ liệu cũ
+                    var existingImages = _context.ImageProducts.Where(i => i.ProductId == id);
+                    var existingSizes = _context.SizeProducts.Where(s => s.ProductId == id);
+                    var existingColors = _context.ColorProducts.Where(c => c.ProductId == id);
+                    
+                    _context.ImageProducts.RemoveRange(existingImages);
+                    _context.SizeProducts.RemoveRange(existingSizes);
+                    _context.ColorProducts.RemoveRange(existingColors);
+
+                    // Thêm dữ liệu mới
+                    if (!string.IsNullOrEmpty(imageUrls))
+                    {
+                        var urls = imageUrls.Split(',').Select(url => url.Trim()).Where(url => !string.IsNullOrEmpty(url));
+                        var images = urls.Select((url, index) => new ImageProduct
+                        {
+                            ProductId = id,
+                            ImageUrl = url,
+                            IsMain = index == 0,
+                            DisplayOrder = index + 1
+                        }).ToList();
+                        _context.ImageProducts.AddRange(images);
+                    }
+
+                    if (sizes != null && sizes.Any())
+                    {
+                        var sizeProducts = sizes.Select(size => new SizeProduct
+                        {
+                            ProductId = id,
+                            SizeName = size,
+                            Stock = product.Stock / sizes.Count
+                        }).ToList();
+                        _context.SizeProducts.AddRange(sizeProducts);
+                    }
+
+                    if (colors != null && colors.Any())
+                    {
+                        var colorProducts = colors.Select(color => new ColorProduct
+                        {
+                            ProductId = id,
+                            ColorName = color,
+                            ColorCode = GetColorCode(color)
+                        }).ToList();
+                        _context.ColorProducts.AddRange(colorProducts);
+                    }
+
                     await _context.SaveChangesAsync();
                     TempData["Success"] = "Cập nhật sản phẩm thành công!";
                     return RedirectToAction(nameof(Index));

@@ -69,18 +69,16 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label asp-for="imgurl" class="form-label fw-500">URL Hình ảnh chính</label>
-                            <input asp-for="imgurl" class="form-control custom-input" />
-                            <span asp-validation-for="imgurl" class="text-danger"></span>
+                            <label for="imageUrls" class="form-label fw-500">URL Hình ảnh</label>
+                            <input name="imageUrls" class="form-control custom-input" placeholder="URL hình ảnh chính" />
                         </div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="ListImg" class="form-label fw-500">URL Hình ảnh khác</label>
-                            <textarea id="ListImg" name="ListImg" class="form-control custom-input"
-                                      placeholder="Nhập các URL hình ảnh, cách nhau bằng dấu phẩy"></textarea>
-                            <span class="text-danger"></span>
+                            <label for="moreImages" class="form-label fw-500">URL Hình ảnh khác</label>
+                            <textarea id="moreImages" class="form-control custom-input"
+                                      placeholder="Nhập các URL hình ảnh khác, cách nhau bằng dấu phẩy"></textarea>
                         </div>
                     </div>
                 </div>
@@ -91,23 +89,23 @@
                             <label class="form-label fw-500">Size có sẵn</label>
                             <div class="d-flex flex-wrap gap-2">
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableSizes" value="S" class="form-check-input" id="sizeS">
+                                    <input type="checkbox" name="sizes" value="S" class="form-check-input" id="sizeS">
                                     <label class="form-check-label" for="sizeS">S</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableSizes" value="M" class="form-check-input" id="sizeM">
+                                    <input type="checkbox" name="sizes" value="M" class="form-check-input" id="sizeM">
                                     <label class="form-check-label" for="sizeM">M</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableSizes" value="L" class="form-check-input" id="sizeL">
+                                    <input type="checkbox" name="sizes" value="L" class="form-check-input" id="sizeL">
                                     <label class="form-check-label" for="sizeL">L</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableSizes" value="XL" class="form-check-input" id="sizeXL">
+                                    <input type="checkbox" name="sizes" value="XL" class="form-check-input" id="sizeXL">
                                     <label class="form-check-label" for="sizeXL">XL</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableSizes" value="XXL" class="form-check-input" id="sizeXXL">
+                                    <input type="checkbox" name="sizes" value="XXL" class="form-check-input" id="sizeXXL">
                                     <label class="form-check-label" for="sizeXXL">XXL</label>
                                 </div>
                             </div>
@@ -119,23 +117,23 @@
                             <label class="form-label fw-500">Màu sắc có sẵn</label>
                             <div class="d-flex flex-wrap gap-2">
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableColors" value="Đỏ" class="form-check-input" id="colorRed">
+                                    <input type="checkbox" name="colors" value="Đỏ" class="form-check-input" id="colorRed">
                                     <label class="form-check-label" for="colorRed">Đỏ</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableColors" value="Xanh" class="form-check-input" id="colorBlue">
+                                    <input type="checkbox" name="colors" value="Xanh" class="form-check-input" id="colorBlue">
                                     <label class="form-check-label" for="colorBlue">Xanh</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableColors" value="Vàng" class="form-check-input" id="colorYellow">
+                                    <input type="checkbox" name="colors" value="Vàng" class="form-check-input" id="colorYellow">
                                     <label class="form-check-label" for="colorYellow">Vàng</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableColors" value="Đen" class="form-check-input" id="colorBlack">
+                                    <input type="checkbox" name="colors" value="Đen" class="form-check-input" id="colorBlack">
                                     <label class="form-check-label" for="colorBlack">Đen</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" name="AvailableColors" value="Trắng" class="form-check-input" id="colorWhite">
+                                    <input type="checkbox" name="colors" value="Trắng" class="form-check-input" id="colorWhite">
                                     <label class="form-check-label" for="colorWhite">Trắng</label>
                                 </div>
                             </div>

@@ -2,6 +2,8 @@
 using QRCoder;
 using System.Drawing;
 using System.IO;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
 using WebBanQuanAo.Models;
 
 namespace WebBanQuanAo.Controllers
@@ -9,15 +11,19 @@ namespace WebBanQuanAo.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CartController> _logger;
+        private readonly IWebHostEnvironment _env;
         private const string BankCode = "970422"; // Mã ngân hàng MB Bank theo chuẩn Napas
         private const string AccountNumber = "0395752407"; // Số tài khoản nhận tiền
         private const string BankName = "MB"; // Tên ngân hàng
         private const string CountryCode = "VN"; // Quốc gia
         private const string CurrencyCode = "704"; // Mã tiền tệ (VND)
 
-        public CartController(ApplicationDbContext context)
+        public CartController(ApplicationDbContext context, ILogger<CartController> logger, IWebHostEnvironment env)
         {
             _context = context;
+            _logger = logger;
+            _env = env;
         }
 
         public IActionResult Index()
@@ -29,35 +35,65 @@ namespace WebBanQuanAo.Controllers
         [HttpPost]
         public IActionResult AddToCart(int productId, int quantity = 1, string selectedSize = null, string selectedColor = null)
         {
-            var product = _context.Products.Find(productId);
-            if (product == null)
+            try
             {
-                return Json(new { success = false, message = "Sản phẩm không tồn tại" });
-            }
+                var product = _context.Products.Find(productId);
+                if (product == null)
+                {
+                    _logger?.LogWarning("AddToCart: product not found. productId={ProductId}", productId);
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại" });
+                }
 
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            
-            var cartItem = new CartItem
-            {
-                Product = product,
-                Quantity = quantity,
-                SelectedSize = selectedSize,
-                SelectedColor = selectedColor
-            };
-            
-            // Tìm item có cùng sản phẩm, size, màu
-            var existingItem = cart.FirstOrDefault(c => c.CartKey == cartItem.CartKey);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += quantity;
-            }
-            else
-            {
-                cart.Add(cartItem);
-            }
+                var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
 
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-            return Json(new { success = true, message = "Thêm vào giỏ hàng thành công" });
+                var mainImage = _context.ImageProducts
+                    .Where(i => i.ProductId == productId && i.IsMain)
+                    .Select(i => i.ImageUrl)
+                    .FirstOrDefault();
+
+                var cartItem = new CartItem
+                {
+                    ProductId = product.ProductId,
+                    ProductName = product.Name,
+                    Price = product.Price,
+                    ImageUrl = mainImage,
+                    Quantity = quantity,
+                    SelectedSize = selectedSize,
+                    SelectedColor = selectedColor,
+                    Product = product
+                };
+
+                // Tìm item có cùng sản phẩm, size, màu
+                var existingItem = cart.FirstOrDefault(c => c.CartKey == cartItem.CartKey);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += quantity;
+                }
+                else
+                {
+                    cart.Add(cartItem);
+                }
+
+                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                _logger?.LogInformation("AddToCart: success productId={ProductId} qty={Qty} size={Size} color={Color}", productId, quantity, selectedSize, selectedColor);
+                return Json(new { success = true, message = "Thêm vào giỏ hàng thành công" });
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    // Ghi log ra file để dễ tìm lỗi
+                    var logsDir = Path.Combine(_env.ContentRootPath ?? ".", "logs");
+                    if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
+                    var logFile = Path.Combine(logsDir, "cart_errors.log");
+                    var entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] AddToCart ERROR: productId={productId} quantity={quantity} size={selectedSize} color={selectedColor} userId={HttpContext.Session.GetInt32("UserId")} Exception={ex}\n";
+                    System.IO.File.AppendAllText(logFile, entry);
+                }
+                catch { }
+
+                _logger?.LogError(ex, "AddToCart failed for productId={ProductId}", productId);
+                return Json(new { success = false, message = "Có lỗi xảy ra khi thêm vào giỏ hàng" });
+            }
         }
         
         [HttpPost]
@@ -77,7 +113,7 @@ namespace WebBanQuanAo.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var totalAmount = cart.Sum(c => c.Product.Price * c.Quantity);
+            var totalAmount = cart.Sum(c => c.Price * c.Quantity);
             var order = new Order
             {
                 UserId = userId.Value,
@@ -89,9 +125,9 @@ namespace WebBanQuanAo.Controllers
                 FullName = fullName,
                 OrderDetails = cart.Select(c => new OrderDetail
                 {
-                    ProductId = c.Product.ProductId,
+                    ProductId = c.ProductId,
                     Quantity = c.Quantity,
-                    Price = c.Product.Price,
+                    Price = c.Price,
                     SelectedSize = c.SelectedSize,
                     SelectedColor = c.SelectedColor
                 }).ToList()

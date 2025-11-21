@@ -16,6 +16,9 @@ namespace WebBanQuanAo.Models
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<FlashSale> FlashSales { get; set; }
         public DbSet<CategoryPromotion> CategoryPromotions { get; set; }
+        public DbSet<ColorProduct> ColorProducts { get; set; }
+        public DbSet<SizeProduct> SizeProducts { get; set; }
+        public DbSet<ImageProduct> ImageProducts { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -53,6 +56,27 @@ namespace WebBanQuanAo.Models
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount)
                 .HasColumnType("decimal(18,2)");
+
+            // Cấu hình cho ColorProduct
+            modelBuilder.Entity<ColorProduct>()
+                .HasOne(cp => cp.Product)
+                .WithMany(p => p.Colors)
+                .HasForeignKey(cp => cp.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình cho SizeProduct
+            modelBuilder.Entity<SizeProduct>()
+                .HasOne(sp => sp.Product)
+                .WithMany(p => p.Sizes)
+                .HasForeignKey(sp => sp.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình cho ImageProduct
+            modelBuilder.Entity<ImageProduct>()
+                .HasOne(ip => ip.Product)
+                .WithMany(p => p.Images)
+                .HasForeignKey(ip => ip.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

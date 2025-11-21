@@ -184,7 +184,8 @@ namespace WebBanQuanAo.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product) // Lấy thông tin sản phẩm
+                .ThenInclude(od => od.Product)
+                .ThenInclude(p => p.Images)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)

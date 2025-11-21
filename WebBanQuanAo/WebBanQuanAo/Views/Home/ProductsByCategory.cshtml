@@ -1,4 +1,7 @@
-﻿<style>
+﻿@model IEnumerable<WebBanQuanAo.Models.Product>
+@using System.Linq
+
+<style>
    .section-header {
         margin-bottom: 40px;
         position: relative;
@@ -245,7 +248,11 @@
                         }
 
                             <a href="@Url.Action("Details", "Home", new { id = product.ProductId })">
-                                <img src="@product.imgurl" class="product-image" alt="@product.Name">
+                                @{
+                                    var mainImage = product.Images.Where(i => i.IsMain).FirstOrDefault();
+                                    var imageUrl = mainImage?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.jpg";
+                                }
+                                <img src="@imageUrl" class="product-image" alt="@product.Name">
                             </a>
                             <div class="product-overlay">
                                 <div class="product-actions">
